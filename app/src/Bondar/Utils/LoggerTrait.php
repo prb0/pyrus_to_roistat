@@ -1,11 +1,12 @@
 <?php
 
-namespace Bondar;
+namespace Bondar\Utils;
 
+use Bondar\Config;
+use DateTime;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
-use DateTime;
 
 trait LoggerTrait
 {

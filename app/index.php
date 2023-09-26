@@ -1,7 +1,7 @@
 <?php
 
-use Bondar\Logger;
 use Bondar\PyrusToRoistat\CronExport;
+use Bondar\Utils\Logger;
 
 require_once __DIR__ . '/vendor/autoload.php';
 

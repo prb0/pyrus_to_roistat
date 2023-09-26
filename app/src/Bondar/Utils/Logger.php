@@ -1,6 +1,6 @@
 <?php
 
-namespace Bondar;
+namespace Bondar\Utils;
 
 class Logger
 {

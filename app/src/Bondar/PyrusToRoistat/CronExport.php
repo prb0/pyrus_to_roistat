@@ -3,17 +3,14 @@
 namespace Bondar\PyrusToRoistat;
 
 use Bondar\Config;
-use Bondar\LoggerTrait;
-use Bondar\Roistat\Api as RoistatApi;
 use Bondar\Pyrus\Api as PyrusApi;
+use Bondar\Roistat\Api as RoistatApi;
 use DateTime;
 use Exception;
 use Throwable;
 
 class CronExport
 {
-    use LoggerTrait;
-
     private $roistatApi;
     private $pyrusApi;
 
@@ -21,8 +18,6 @@ class CronExport
     {
         $this->roistatApi = new RoistatApi();
         $this->pyrusApi = new PyrusApi();
-
-        $this->setLogger();
     }
 
     public function process()

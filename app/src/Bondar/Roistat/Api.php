@@ -3,9 +3,8 @@
 namespace Bondar\Roistat;
 
 use Bondar\Config;
-use Bondar\LoggerTrait;
+use Bondar\Utils\LoggerTrait;
 use GuzzleHttp\Client;
-use Throwable;
 
 class Api
 {
