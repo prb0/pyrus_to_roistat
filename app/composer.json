@@ -9,10 +9,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Bondar\\": "src/Bondar",
-            "Bondar\\Pyrus\\": "src/Bondar/Pyrus",
-            "Bondar\\Roistat\\": "src/Bondar/Roistat",
-            "Bondar\\PyrusToRoistat\\": "src/Bondar/PyrusToRoistat"
+            "Bondar\\": "src/Bondar"
         }
     },
     "authors": [
