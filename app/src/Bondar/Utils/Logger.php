@@ -6,8 +6,8 @@ class Logger
 {
     use LoggerTrait;
 
-    public function __construct()
+    public function __construct($loggerName = 'Logger')
     {
-        $this->setLogger();
+        $this->setLogger($loggerName);
     }
 }

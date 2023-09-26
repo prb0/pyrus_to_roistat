@@ -100,11 +100,11 @@ class CronExport
 
     public function getPreparedRoistatClient(array $client): array
     {
-        $fields = $this->getFieldsHashTable($client['fields']);
+        $fields = Helper::getFieldsHashTable($client['fields']);
 
         return [
             'id' => (string)$client['id'],
-            'fields' => $this->parseFields($client['fields']),
+            'fields' => Helper::parseFields($client['fields']),
             'name' => $fields[Config::PYRUS_CLIENT_NAME_ID]['value'],
             'email' => $fields[Config::PYRUS_CLIENT_EMAIL_ID]['value'],
             'phone' => $fields[Config::PYRUS_CLIENT_PHONE_ID]['value'],
@@ -114,14 +114,14 @@ class CronExport
 
     public function getPreparedRoistatOrder(array $order): array
     {
-        $fields = $this->getFieldsHashTable($order['fields']);
+        $fields = Helper::getFieldsHashTable($order['fields']);
 
         try {
             return [
                 'id' => (string)$order['id'],
                 'date_create' => (new DateTime($order['create_date']))->getTimestamp(),
                 'name' => 'Заявка',
-                'fields' => $this->parseFields($order['fields']),
+                'fields' => Helper::parseFields($order['fields']),
                 'client_id' => empty($fields[Config::PYRUS_CLIENT_FIELD_ID]['value']['task_id'])
                     ? ''
                     : (string)$fields[Config::PYRUS_CLIENT_FIELD_ID]['value']['task_id'],
@@ -138,38 +138,5 @@ class CronExport
         } catch (Throwable $e) {
             throw new Exception($e);
         }
-    }
-
-    private function parseFields(array $fields): array
-    {
-        $result = [];
-
-        foreach ($fields as $field) {
-            if (empty($field['value'])) {
-                continue;
-            }
-            if (is_array($field['value'])) {
-                if (!empty($field['value']['choice_names'])) {
-                    $result[$field['name']] = implode(', ', $field['value']['choice_names']);
-                } else if (!empty($field['value']['subject'])) {
-                    $result[$field['name']] = $field['value']['subject'];
-                }
-            } else {
-                $result[$field['name']] = $field['value'];
-            }
-        }
-
-        return $result;
-    }
-
-    private function getFieldsHashTable(array $fields): array
-    {
-        $result = [];
-
-        foreach ($fields as $field) {
-            $result[$field['id']] = $field;
-        }
-
-        return $result;
     }
 }

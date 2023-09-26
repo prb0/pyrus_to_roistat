@@ -11,9 +11,9 @@ use Monolog\Logger;
 trait LoggerTrait
 {
     private $logger;
-    private function setLogger()
+    private function setLogger($loggerName = 'Pyrus')
     {
-        $this->logger = new Logger('Pyrus');
+        $this->logger = new Logger($loggerName);
         $this->logger->pushHandler(new StreamHandler('php://stdout', Logger::ERROR));
 
         if (true === Config::DEBUG) {

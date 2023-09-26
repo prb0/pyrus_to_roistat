@@ -17,6 +17,9 @@ class Config
     const PYRUS_CLIENT_NAME_ID = 5;
     const PYRUS_CLIENT_PHONE_ID = 6;
     const PYRUS_CLIENT_EMAIL_ID = 7;
+    const PYRUS_ORDER_NAME_ID = 5;
+    const PYRUS_ORDER_PHONE_ID = 6;
+    const PYRUS_ORDER_EMAIL_ID = 7;
     const PYRUS_CLIENT_BIRTH_DATE_ID = 20;
     const ROISTAT_API_KEY = 'fff';
     const ROISTAT_PROJECT_ID = '111111';

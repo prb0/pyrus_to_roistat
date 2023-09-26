@@ -3,7 +3,7 @@
 namespace Bondar\PyrusToRoistat;
 
 use Bondar\Config;
-use Bondar\Pyrus\Api;
+use Bondar\Pyrus\Api as PyrusApi;
 use Exception;
 
 class MyCRM
@@ -14,7 +14,7 @@ class MyCRM
 
     public function __construct(array $request)
     {
-        $this->pyrusApi = new Api();
+        $this->pyrusApi = new PyrusApi();
         $this->data = $request;
         $this->parseProxyLeadFields();
 
@@ -84,8 +84,16 @@ class MyCRM
         ]);
 
         if (!empty($response['tasks'])) {
-            $this->doubleLeadId = $response['tasks'][0]['id'];
-            return true;
+            foreach ($response['tasks'] as $task) {
+                $fields = Helper::getFieldsHashTable($task['fields']);
+                $closedStatuses = Helper::getClosedStatuses();
+
+                if (!in_array($fields[Config::PYRUS_STATUS_FIELD_ID]['value']['choice_id'], $closedStatuses)) {
+                    $this->doubleLeadId = $task['id'];
+
+                    return true;
+                }
+            }
         }
 
         return false;
@@ -123,16 +131,35 @@ class MyCRM
         $result = $this->prepareBasicOrderFields();
 
         foreach ($this->data['data'] as $id => $value) {
-            if (!is_numeric($id)) {
-                continue;
+            if (is_numeric($id)) {
+                $result[] = [
+                    'id' => $id,
+                    'value' => $value,
+                ];
+            } else {
+                if (Helper::isParseableField($id)) {
+                    $result[] = self::parseField([$id, $value]);
+                }
             }
-            $result[] = [
-                'id' => $id,
-                'value' => $value,
-            ];
         }
 
         return $result;
+    }
+
+    private static function parseField(array $fields): array
+    {
+        $re = '/^[a-zA-Z]*/m';
+        preg_match_all($re, $fields[0], $type, PREG_SET_ORDER, 0);
+
+        $re = '/\d*$/m';
+        preg_match_all($re, $fields[0], $id, PREG_SET_ORDER, 0);
+
+        return [
+            'id' => $id[0][0],
+            'value' => [
+                $type[0][0] => $fields[1]
+            ],
+        ];
     }
 
     private function prepareBasicClientFields(): array
@@ -161,12 +188,21 @@ class MyCRM
                 ],
             ], [
                 'id' => Config::PYRUS_CLIENT_FIELD_ID,
-                'value' =>  [
+                'value' => [
                     'task_id' => $this->data['client_id']
                 ],
             ], [
                 'id' => Config::PYRUS_ROISTAT_FIELD_ID,
                 'value' => $this->data['visit'] ?? '',
+            ], [
+                'id' => Config::PYRUS_ORDER_NAME_ID,
+                'value' => $this->data['name'] ?? '',
+            ], [
+                'id' => Config::PYRUS_ORDER_PHONE_ID,
+                'value' => $this->data['phone'] ?? '',
+            ], [
+                'id' => Config::PYRUS_ORDER_EMAIL_ID,
+                'value' => $this->data['email'] ?? '',
             ],
         ];
     }
