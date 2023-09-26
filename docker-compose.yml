@@ -1,0 +1,20 @@
+version: '3.1'
+
+services:
+  php:
+    image: php:7.0-apache
+    ports:
+      - 80:80
+    volumes:
+      - ./app:/var/www/html/  
+
+  composer:
+    build:
+      context: .
+      dockerfile: ./composer/Dockerfile
+    restart: 'no'
+    container_name: composer
+    working_dir: /var/www/html
+    command: composer install -d /var/www/html
+    volumes:
+      - ./app:/var/www/html/

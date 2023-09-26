@@ -1,0 +1,24 @@
+{
+    "name": "bondar/roistat-pyrus",
+    "description": "Integration of Pyrus CRM with Roistat",
+    "require": {
+        "monolog/monolog": "1.9",
+        "guzzlehttp/guzzle": "6.5",
+        "ext-json": "*"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Bondar\\": "src/Bondar",
+            "Bondar\\Pyrus\\": "src/Bondar/Pyrus",
+            "Bondar\\Roistat\\": "src/Bondar/Roistat",
+            "Bondar\\PyrusToRoistat\\": "src/Bondar/PyrusToRoistat"
+        }
+    },
+    "authors": [
+        {
+            "name": "src/Bondar Artem",
+            "email": "artembondar1991@gmail.com"
+        }
+    ]
+}
