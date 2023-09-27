@@ -3,24 +3,14 @@
 namespace Bondar\Roistat;
 
 use Bondar\Config;
-use Bondar\Utils\LoggerTrait;
-use GuzzleHttp\Client;
+use Bondar\Utils\AbstractApi;
 
-class Api
+class Api extends AbstractApi
 {
-    use LoggerTrait;
+    protected static $requestPing = 250001;
+    protected static $baseUri = 'https://cloud.roistat.com/api/v1/';
 
-    const REQUEST_PING = 250001;
-    const BASE_URI = 'https://cloud.roistat.com/api/v1/';
-
-    private $httpClient;
-
-    public function __construct()
-    {
-        $this->httpClient = new Client(['base_uri' => static::BASE_URI]);
-
-        $this->setLogger();
-    }
+    protected $httpClient;
 
     public function addEntities(string $entityName, array $entities)
     {
@@ -55,7 +45,7 @@ class Api
 
     private function request($method, $body = '')
     {
-        usleep(static::REQUEST_PING);
+        usleep(static::$requestPing);
 
         try {
             $params = [

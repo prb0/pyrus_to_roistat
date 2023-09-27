@@ -3,23 +3,19 @@
 namespace Bondar\Pyrus;
 
 use Bondar\Config;
-use Bondar\Utils\LoggerTrait;
-use GuzzleHttp\Client;
+use Bondar\Utils\AbstractApi;
 
-class Api
+class Api extends AbstractApi
 {
-    use LoggerTrait;
-
-    const REQUEST_PING = 150001;
-    const BASE_URI = 'https://api.pyrus.com/v4/';
+    protected $httpClient;
+    protected static $requestPing = 150001;
+    protected static $baseUri = 'https://api.pyrus.com/v4/';
     private $token;
-    private $httpClient;
 
     public function __construct()
     {
-        $this->httpClient = new Client(['base_uri' => static::BASE_URI]);
+        parent::__construct();
 
-        $this->setLogger();
         $this->auth();
     }
 
@@ -57,7 +53,7 @@ class Api
 
     private function request($method, $body = '')
     {
-        usleep(static::REQUEST_PING);
+        usleep(static::$requestPing);
 
         try {
             $options = [

@@ -4,16 +4,19 @@ namespace Bondar\PyrusToRoistat;
 
 use Bondar\Config;
 use Bondar\Pyrus\Api as PyrusApi;
+use Cassandra\Date;
+use DateTime;
 use Exception;
 
 class MyCRM
 {
     private $pyrusApi;
     private $data;
-    private $doubleLeadId = 0;
+    private $dateTime;
 
     public function __construct(array $request)
     {
+        $this->dateTime = new DateTime('now');
         $this->pyrusApi = new PyrusApi();
         $this->data = $request;
         $this->parseProxyLeadFields();
@@ -63,7 +66,7 @@ class MyCRM
         $this->data['client_id'] = $this->getPyrusClient()['id'];
 
         if ($this->isDouble()) {
-            return ['status' => 'ok', 'lead_id' => $this->doubleLeadId];
+            return ['status' => 'double'];
         }
 
         $leadData = $this->getPreparedPyrusOrder();
@@ -86,11 +89,10 @@ class MyCRM
         if (!empty($response['tasks'])) {
             foreach ($response['tasks'] as $task) {
                 $fields = Helper::getFieldsHashTable($task['fields']);
-                $closedStatuses = Helper::getClosedStatuses();
 
-                if (!in_array($fields[Config::PYRUS_STATUS_FIELD_ID]['value']['choice_id'], $closedStatuses)) {
-                    $this->doubleLeadId = $task['id'];
-
+                if (in_array(
+                        $fields[Config::PYRUS_STATUS_FIELD_ID]['value']['choice_id'],
+                        Helper::getActiveStatuses())) {
                     return true;
                 }
             }
@@ -138,28 +140,12 @@ class MyCRM
                 ];
             } else {
                 if (Helper::isParseableField($id)) {
-                    $result[] = static::parseField([$id, $value]);
+                    $result[] = Helper::parseField([$id, $value]);
                 }
             }
         }
 
         return $result;
-    }
-
-    private static function parseField(array $fields): array
-    {
-        $re = '/^[a-zA-Z]*/m';
-        preg_match_all($re, $fields[0], $type, PREG_SET_ORDER, 0);
-
-        $re = '/\d*$/m';
-        preg_match_all($re, $fields[0], $id, PREG_SET_ORDER, 0);
-
-        return [
-            'id' => $id[0][0],
-            'value' => [
-                $type[0][0] => $fields[1]
-            ],
-        ];
     }
 
     private function prepareBasicClientFields(): array
@@ -182,19 +168,6 @@ class MyCRM
     {
         return [
             [
-                'id' => Config::PYRUS_STATUS_FIELD_ID,
-                'value' => [
-                    'choice_id' => Config::PYRUS_DEFAULT_STATUS_ID
-                ],
-            ], [
-                'id' => Config::PYRUS_CLIENT_FIELD_ID,
-                'value' => [
-                    'task_id' => $this->data['client_id']
-                ],
-            ], [
-                'id' => Config::PYRUS_ROISTAT_FIELD_ID,
-                'value' => $this->data['visit'] ?? '',
-            ], [
                 'id' => Config::PYRUS_ORDER_NAME_ID,
                 'value' => $this->data['name'] ?? '',
             ], [
@@ -203,8 +176,43 @@ class MyCRM
             ], [
                 'id' => Config::PYRUS_ORDER_EMAIL_ID,
                 'value' => $this->data['email'] ?? '',
+            ], [
+                'id' => Config::PYRUS_ROISTAT_FIELD_ID,
+                'value' => $this->data['visit'] ?? '',
+            ], [
+                'id' => Config::PYRUS_ORDER_DATE_ID,
+                'value' => $this->dateTime->format(Config::PYRUS_ORDER_DATE_FORMAT)
+            ], [
+                'id' => Config::PYRUS_CLIENT_FIELD_ID,
+                'value' => [
+                    'task_id' => $this->data['client_id']
+                ],
+            ], [
+                'id' => Config::PYRUS_STATUS_FIELD_ID,
+                'value' => [
+                    'choice_id' => Config::PYRUS_DEFAULT_STATUS_ID
+                ],
+            ], [
+                'id' => Config::PYRUS_ORDER_OPPORTUNITY_ID,
+                'value' => [
+                    'choice_id' => Config::PYRUS_ORDER_OPPORTUNITY_DEFAULT_VALUE
+                ],
+            ], [
+                'id' => Config::PYRUS_ORDER_TIME_ID,
+                'value' => [
+                    'choice_id' => $this->getTimeChoiceId()
+                ],
             ],
         ];
+    }
+
+    private function getTimeChoiceId(): int
+    {
+        $hour = $this->dateTime->format('H');
+
+        return ($hour >= Config::PYRUS_START_DAY_HOURS && $hour <= Config::PYRUS_END_DAY_HOURS)
+            ? Config::PYRUS_DAY_VALUE
+            : Config::PYRUS_NIGHT_VALUE;
     }
 
     public function parseProxyLeadFields()

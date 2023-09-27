@@ -30,8 +30,23 @@ class Helper
 
     public static function isParseableField($id): bool
     {
-        return stripos($id, 'choice') !== false
-            || stripos($id, 'task') !== false;
+        return stripos($id, '_id') !== false;
+    }
+
+    public static function parseField(array $fields): array
+    {
+        $re = '/^[a-zA-Z]*_id/m';
+        preg_match_all($re, $fields[0], $type, PREG_SET_ORDER, 0);
+
+        $re = '/\d*$/m';
+        preg_match_all($re, $fields[0], $id, PREG_SET_ORDER, 0);
+
+        return [
+            'id' => (int) $id[0][0],
+            'value' => [
+                $type[0][0] => $fields[1]
+            ],
+        ];
     }
 
     public static function getFieldsHashTable(array $fields): array
@@ -45,10 +60,10 @@ class Helper
         return $result;
     }
 
-    public static function getClosedStatuses(): array
+    public static function getActiveStatuses(): array
     {
         $closedStatuses = array_filter(Config::$statuses, function ($status) {
-            return $status['type'] === 'paid' || $status['type'] === 'canceled';
+            return $status['type'] === 'progress';
         });
 
         foreach ($closedStatuses as $key => $status) {

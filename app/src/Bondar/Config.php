@@ -20,6 +20,15 @@ class Config
     const PYRUS_ORDER_NAME_ID = 5;
     const PYRUS_ORDER_PHONE_ID = 6;
     const PYRUS_ORDER_EMAIL_ID = 7;
+    const PYRUS_ORDER_DATE_FORMAT = 'Y-m-d';
+    const PYRUS_ORDER_DATE_ID = 4;
+    const PYRUS_ORDER_OPPORTUNITY_ID = 16;
+    const PYRUS_ORDER_OPPORTUNITY_DEFAULT_VALUE = 5;
+    const PYRUS_ORDER_TIME_ID = 3;
+    const PYRUS_START_DAY_HOURS = 6;
+    const PYRUS_END_DAY_HOURS = 17;
+    const PYRUS_NIGHT_VALUE = 1;
+    const PYRUS_DAY_VALUE = 2;
     const PYRUS_CLIENT_BIRTH_DATE_ID = 20;
     const ROISTAT_API_KEY = 'fff';
     const ROISTAT_PROJECT_ID = '111111';
