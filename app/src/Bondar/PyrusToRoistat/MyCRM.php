@@ -138,7 +138,7 @@ class MyCRM
                 ];
             } else {
                 if (Helper::isParseableField($id)) {
-                    $result[] = self::parseField([$id, $value]);
+                    $result[] = static::parseField([$id, $value]);
                 }
             }
         }

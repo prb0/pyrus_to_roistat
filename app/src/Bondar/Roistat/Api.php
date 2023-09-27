@@ -17,7 +17,7 @@ class Api
 
     public function __construct()
     {
-        $this->httpClient = new Client(['base_uri' => self::BASE_URI]);
+        $this->httpClient = new Client(['base_uri' => static::BASE_URI]);
 
         $this->setLogger();
     }
@@ -55,7 +55,7 @@ class Api
 
     private function request($method, $body = '')
     {
-        usleep(self::REQUEST_PING);
+        usleep(static::REQUEST_PING);
 
         try {
             $params = [
