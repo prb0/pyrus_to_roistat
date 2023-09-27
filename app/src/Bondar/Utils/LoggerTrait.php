@@ -11,6 +11,7 @@ use Monolog\Logger;
 trait LoggerTrait
 {
     private $logger;
+
     private function setLogger($loggerName = 'Pyrus')
     {
         $this->logger = new Logger($loggerName);

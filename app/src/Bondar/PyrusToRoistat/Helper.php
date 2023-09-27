@@ -42,7 +42,7 @@ class Helper
         preg_match_all($re, $fields[0], $id, PREG_SET_ORDER, 0);
 
         return [
-            'id' => (int) $id[0][0],
+            'id' => (int)$id[0][0],
             'value' => [
                 $type[0][0] => $fields[1]
             ],
